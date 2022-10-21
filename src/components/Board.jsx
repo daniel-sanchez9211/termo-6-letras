@@ -70,6 +70,7 @@ function Board() {
             }, 100);
         }
         setActiveLine(stateRef.current.activeLine + 1)
+        setSelectedSquare(0)
     }
 
     function nextSquare() {
