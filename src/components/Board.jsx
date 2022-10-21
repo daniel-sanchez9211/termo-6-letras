@@ -1,4 +1,5 @@
 import Line from "./Line";
+import SimpleKeyboard from "./SimpleKeyboard"
 import { words } from '../utils/words'
 import { useEffect, useState, useRef } from "react"
 
@@ -13,12 +14,18 @@ function Board() {
     ['', '', '', '', '', ''],
     ['', '', '', '', '', '']]
     )
+    const [greyLetters, setGreyLetters] = useState(["{shift}"]) 
+    const [yellowLetters, setYellowLetters] = useState(["{shift}"]) 
+    const [greenLetters, setGreenLetters] = useState(["{shift}"]) 
     const stateRef = useRef();
     stateRef.current = {
         selectedSquare,
         letters,
         activeLine,
-        word
+        word,
+        greenLetters,
+        greyLetters,
+        yellowLetters,
     };
     useEffect(() => {
         console.log(word)
@@ -66,6 +73,20 @@ function Board() {
 
         if (!allFilled) return
 
+        const newGreenLettersArr = [...stateRef.current.greenLetters]
+        const newYelloLettersArr = [...stateRef.current.yellowLetters]
+        const newGreyLettersArr = [...stateRef.current.greyLetters]
+
+        letters[stateRef.current.activeLine].forEach((l,i) => {
+            if(l.toLowerCase() === stateRef.current.word.charAt(i)) {
+                newGreenLettersArr.push(l.toLowerCase())
+            } else if (l && l.toLowerCase() !== stateRef.current.word.charAt(i) && stateRef.current.word.includes(l.toLowerCase()) ) {
+                newYelloLettersArr.push(l.toLowerCase())
+            } else if (l && !stateRef.current.word.includes(l.toLowerCase())) {
+                newGreyLettersArr.push(l.toLowerCase())
+            }            
+        })
+
         if (stateRef.current.word === letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
             setTimeout(() => {
                 alert('Acertou! A palavra é ' + word)
@@ -79,6 +100,10 @@ function Board() {
         }
         setActiveLine(stateRef.current.activeLine + 1)
         setSelectedSquare(0)
+        console.log(newGreyLettersArr)
+        setGreenLetters([...newGreenLettersArr])
+        setYellowLetters([...newYelloLettersArr])
+        setGreyLetters([...newGreyLettersArr])
     }
 
     function nextSquare() {
@@ -101,8 +126,10 @@ function Board() {
             <h1>Termo 6 letras!</h1>
 
             {letters.map((l, i) => {
-                return <Line key={i} isActive={activeLine === i} selectedSquare={selectedSquare} letters={letters[i]} activeLine={activeLine} word={word} done={activeLine > i} handleSquareClick={handleSquareClick} />
+                return <Line key={i} isActive={activeLine === i} selectedSquare={selectedSquare} letters={letters[i]} activeLine={activeLine} word={word} done={activeLine > i} handleSquareClick={handleSquareClick}/>
             })}
+
+            <SimpleKeyboard setLetter={setLetter} playWord={playWord} eraseLetter={eraseLetter} greyLetters={greyLetters} greenLetters={greenLetters} yellowLetters={yellowLetters}/>
         </div>
     );
 }
