@@ -29,17 +29,32 @@ function Board() {
                 previousSquare()
             } else if (event.keyCode === 13) {
                 playWord()
+            } else if (event.keyCode === 8) {
+                eraseLetter()
             } else if (event.which) {
-                setLetter(event)
+                setLetter(String.fromCharCode(event.which))
             }
         })
     }, [])
 
-    function setLetter(event) {
+    function setLetter(value) {
         const newLetterArray = stateRef.current.letters
-        newLetterArray[stateRef.current.activeLine][stateRef.current.selectedSquare] = String.fromCharCode(event.which)
-        setLetters(newLetterArray)
+        newLetterArray[stateRef.current.activeLine][stateRef.current.selectedSquare] = value
+        setLetters([...newLetterArray])
         nextSquare()
+    }
+
+    function eraseLetter() {
+        if(stateRef.current.selectedSquare > 0) {
+            const newLetterArray = stateRef.current.letters
+            const isEmpty = newLetterArray[stateRef.current.activeLine][stateRef.current.selectedSquare] === ''
+            const squareToErase = isEmpty ? stateRef.current.selectedSquare - 1 : stateRef.current.selectedSquare
+            newLetterArray[stateRef.current.activeLine][squareToErase] = ''
+            setLetters([...newLetterArray])
+            if(isEmpty) {
+                previousSquare()
+            }  
+        }
     }
 
     function playWord() {
@@ -59,7 +74,7 @@ function Board() {
 
     function nextSquare() {
         const ns = stateRef.current.selectedSquare + 1;
-        setSelectedSquare(ns > 5 ? 0 : ns)
+        if(ns < 6) setSelectedSquare(ns)
     }
 
     function previousSquare() {
