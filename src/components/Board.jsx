@@ -58,6 +58,14 @@ function Board() {
     }
 
     function playWord() {
+        let allFilled = true
+
+        letters[stateRef.current.activeLine].forEach(l=>{
+            if(!l) allFilled = false
+        })
+
+        if(!allFilled) return
+        
         if (stateRef.current.word === letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
             setTimeout(() => {
                 alert('Acertou! A palavra é ' + word)
