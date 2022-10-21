@@ -43,6 +43,17 @@ function Board() {
     }
 
     function playWord() {
+        if (stateRef.current.word === letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
+            setTimeout(() => {
+                alert('Acertou! A palavra é ' + word)
+            }, 100);
+            return setActiveLine(6) //gambiarra para tirar a interacao da tela (encerrar o jogo)
+        }
+        if (stateRef.current.word !== letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase() && stateRef.current.activeLine + 1 > 5) {
+            setTimeout(() => {
+                alert('Errooooou! A palavra é ' + word)
+            }, 100);
+        }
         setActiveLine(stateRef.current.activeLine + 1)
     }
 
@@ -65,12 +76,12 @@ function Board() {
         <div className="Board">
             <h1>Termo 6 letras!</h1>
 
-            <Line isActive={activeLine === 0} selectedSquare={selectedSquare} letters={letters[0]} activeLine={activeLine} word={word} done={activeLine > 0} handleSquareClick={handleSquareClick}/>
-            <Line isActive={activeLine === 1} selectedSquare={selectedSquare} letters={letters[1]} activeLine={activeLine} word={word} done={activeLine > 1} handleSquareClick={handleSquareClick}/>
-            <Line isActive={activeLine === 2} selectedSquare={selectedSquare} letters={letters[2]} activeLine={activeLine} word={word} done={activeLine > 2} handleSquareClick={handleSquareClick}/>
-            <Line isActive={activeLine === 3} selectedSquare={selectedSquare} letters={letters[3]} activeLine={activeLine} word={word} done={activeLine > 3} handleSquareClick={handleSquareClick}/>
-            <Line isActive={activeLine === 4} selectedSquare={selectedSquare} letters={letters[4]} activeLine={activeLine} word={word} done={activeLine > 4} handleSquareClick={handleSquareClick}/>
-            <Line isActive={activeLine === 5} selectedSquare={selectedSquare} letters={letters[5]} activeLine={activeLine} word={word} done={activeLine > 5} handleSquareClick={handleSquareClick}/>
+            <Line isActive={activeLine === 0} selectedSquare={selectedSquare} letters={letters[0]} activeLine={activeLine} word={word} done={activeLine > 0} handleSquareClick={handleSquareClick} />
+            <Line isActive={activeLine === 1} selectedSquare={selectedSquare} letters={letters[1]} activeLine={activeLine} word={word} done={activeLine > 1} handleSquareClick={handleSquareClick} />
+            <Line isActive={activeLine === 2} selectedSquare={selectedSquare} letters={letters[2]} activeLine={activeLine} word={word} done={activeLine > 2} handleSquareClick={handleSquareClick} />
+            <Line isActive={activeLine === 3} selectedSquare={selectedSquare} letters={letters[3]} activeLine={activeLine} word={word} done={activeLine > 3} handleSquareClick={handleSquareClick} />
+            <Line isActive={activeLine === 4} selectedSquare={selectedSquare} letters={letters[4]} activeLine={activeLine} word={word} done={activeLine > 4} handleSquareClick={handleSquareClick} />
+            <Line isActive={activeLine === 5} selectedSquare={selectedSquare} letters={letters[5]} activeLine={activeLine} word={word} done={activeLine > 5} handleSquareClick={handleSquareClick} />
         </div>
     );
 }
