@@ -21,9 +21,9 @@
 
 .Square {
   height: 50px;
-  width: 50px;
+  width: 16.66%;
   border: 2px solid #333;
-  margin: 5px;
+  margin: 5px 2px;
   border-radius: 10px;
   display: flex;
   justify-content: center;
