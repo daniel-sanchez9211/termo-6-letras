@@ -45,27 +45,27 @@ function Board() {
     }
 
     function eraseLetter() {
-        if(stateRef.current.selectedSquare > 0) {
+        if (stateRef.current.selectedSquare > 0) {
             const newLetterArray = stateRef.current.letters
             const isEmpty = newLetterArray[stateRef.current.activeLine][stateRef.current.selectedSquare] === ''
             const squareToErase = isEmpty ? stateRef.current.selectedSquare - 1 : stateRef.current.selectedSquare
             newLetterArray[stateRef.current.activeLine][squareToErase] = ''
             setLetters([...newLetterArray])
-            if(isEmpty) {
+            if (isEmpty) {
                 previousSquare()
-            }  
+            }
         }
     }
 
     function playWord() {
         let allFilled = true
 
-        letters[stateRef.current.activeLine].forEach(l=>{
-            if(!l) allFilled = false
+        letters[stateRef.current.activeLine].forEach(l => {
+            if (!l) allFilled = false
         })
 
-        if(!allFilled) return
-        
+        if (!allFilled) return
+
         if (stateRef.current.word === letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
             setTimeout(() => {
                 alert('Acertou! A palavra é ' + word)
@@ -83,7 +83,7 @@ function Board() {
 
     function nextSquare() {
         const ns = stateRef.current.selectedSquare + 1;
-        if(ns < 6) setSelectedSquare(ns)
+        if (ns < 6) setSelectedSquare(ns)
     }
 
     function previousSquare() {
@@ -100,12 +100,9 @@ function Board() {
         <div className="Board">
             <h1>Termo 6 letras!</h1>
 
-            <Line isActive={activeLine === 0} selectedSquare={selectedSquare} letters={letters[0]} activeLine={activeLine} word={word} done={activeLine > 0} handleSquareClick={handleSquareClick} />
-            <Line isActive={activeLine === 1} selectedSquare={selectedSquare} letters={letters[1]} activeLine={activeLine} word={word} done={activeLine > 1} handleSquareClick={handleSquareClick} />
-            <Line isActive={activeLine === 2} selectedSquare={selectedSquare} letters={letters[2]} activeLine={activeLine} word={word} done={activeLine > 2} handleSquareClick={handleSquareClick} />
-            <Line isActive={activeLine === 3} selectedSquare={selectedSquare} letters={letters[3]} activeLine={activeLine} word={word} done={activeLine > 3} handleSquareClick={handleSquareClick} />
-            <Line isActive={activeLine === 4} selectedSquare={selectedSquare} letters={letters[4]} activeLine={activeLine} word={word} done={activeLine > 4} handleSquareClick={handleSquareClick} />
-            <Line isActive={activeLine === 5} selectedSquare={selectedSquare} letters={letters[5]} activeLine={activeLine} word={word} done={activeLine > 5} handleSquareClick={handleSquareClick} />
+            {letters.map((l, i) => {
+                return <Line key={i} isActive={activeLine === i} selectedSquare={selectedSquare} letters={letters[i]} activeLine={activeLine} word={word} done={activeLine > i} handleSquareClick={handleSquareClick} />
+            })}
         </div>
     );
 }
