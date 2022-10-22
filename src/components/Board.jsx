@@ -38,7 +38,7 @@ function Board() {
                 playWord()
             } else if (event.keyCode === 8) {
                 eraseLetter()
-            } else if (event.which) {
+            } else if (String.fromCharCode(event.which).match(/[a-zA-Z]/g)) {
                 setLetter(String.fromCharCode(event.which))
             }
         })
