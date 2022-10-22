@@ -66,6 +66,10 @@ function SimpleKeyboard({setLetter, playWord, eraseLetter, greenLetters, yellowL
           {
             class: "grey",
             buttons: greyLetters.join(' ')
+          },
+          {
+            class: "disabled",
+            buttons: " "
           }
         ]}
       />

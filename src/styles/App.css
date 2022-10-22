@@ -54,3 +54,8 @@
 .Keyboard {
   margin-top: 30px;
 }
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}

@@ -3,7 +3,7 @@ function Square({isSelected, letter, word, position, done, handleSquareClick}) {
 
     if(done && letter.toLowerCase() === word.charAt(position)) {
         classes += ' green'
-    } else if (done && letter && letter.toLowerCase() !== word.charAt(position) && word.includes(letter.toLowerCase()) ) {
+    } else if (done && letter && letter.toLowerCase() !== word.charAt(position) && word.includes(letter.toLowerCase())) {
         classes += ' yellow'
     }
 

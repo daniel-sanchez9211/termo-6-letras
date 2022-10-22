@@ -14,9 +14,9 @@ function Board() {
     ['', '', '', '', '', ''],
     ['', '', '', '', '', '']]
     )
-    const [greyLetters, setGreyLetters] = useState(["{shift}"]) 
-    const [yellowLetters, setYellowLetters] = useState(["{shift}"]) 
-    const [greenLetters, setGreenLetters] = useState(["{shift}"]) 
+    const [greyLetters, setGreyLetters] = useState(["}"]) 
+    const [yellowLetters, setYellowLetters] = useState(["}"]) 
+    const [greenLetters, setGreenLetters] = useState(["}"]) 
     const stateRef = useRef();
     stateRef.current = {
         selectedSquare,
