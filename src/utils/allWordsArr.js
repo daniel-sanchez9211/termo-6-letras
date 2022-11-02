@@ -245365,6 +245365,35 @@ zurres
 zurro
 zurros
 zurrou
+outrem
+idilio
+gitano
+alarde
+ilacao
+triade
+fatico
+desdem
+seccao
+aduzir
+nuance
+chiste
+torpor
+servil
+elidir
+florao
+ilidir
+abonar
+porvir
+exacao
+aceder
+expert
+mentor
+cedico
+frugal
+cartel
+fulcro
+larica
+falico
 `
 
 export const allWordsArr = hugeString.split('\n')

@@ -29,7 +29,6 @@ function Board() {
         yellowLetters,
     };
     useEffect(() => {
-        console.log(word)
         window.addEventListener("keydown", (event) => {
             if (event.keyCode === 39) {
                 nextSquare()
