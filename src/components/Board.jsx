@@ -1,6 +1,7 @@
 import Line from "./Line";
 import SimpleKeyboard from "./SimpleKeyboard"
 import { words } from '../utils/words'
+import { allWordsArr } from '../utils/allWordsArr'
 import { useEffect, useState, useRef } from "react"
 
 function Board() {
@@ -72,6 +73,7 @@ function Board() {
         })
 
         if (!allFilled) return
+        if (allWordsArr.indexOf(letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) === -1) return
 
         const newGreenLettersArr = [...stateRef.current.greenLetters]
         const newYelloLettersArr = [...stateRef.current.yellowLetters]
