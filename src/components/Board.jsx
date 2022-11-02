@@ -43,7 +43,7 @@ function Board() {
                 setLetter(String.fromCharCode(event.which))
             }
         })
-    }, [])
+    }, []);
 
     function setLetter(value) {
         const newLetterArray = stateRef.current.letters
