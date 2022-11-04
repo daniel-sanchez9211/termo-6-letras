@@ -48,6 +48,7 @@ function Board() {
 
     function loadWord(){
         const db = firebase.firestore()
+        
         db.collection("termo").get()
             .then(querySnapshot => {
                 querySnapshot.forEach(doc => {
