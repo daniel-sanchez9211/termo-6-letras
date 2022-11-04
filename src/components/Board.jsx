@@ -3,11 +3,13 @@ import SimpleKeyboard from "./SimpleKeyboard"
 import { words } from '../utils/words'
 import { allWordsArr } from '../utils/allWordsArr'
 import { useEffect, useState, useRef } from "react"
+import app from '../firebase'
+import { getFirestore, collection, getDocs, updateDoc, doc } from 'firebase/firestore/lite';
 
 function Board() {
     const [activeLine, setActiveLine] = useState(0)
     const [selectedSquare, setSelectedSquare] = useState(0)
-    const [word, setWord] = useState(words[Math.floor(Math.random() * (Math.floor(words.length) - Math.ceil(1) + 1)) + Math.ceil(1)].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ""))
+    const [word, setWord] = useState('')
     const [letters, setLetters] = useState([['', '', '', '', '', ''],
     ['', '', '', '', '', ''],
     ['', '', '', '', '', ''],
@@ -42,7 +44,40 @@ function Board() {
                 setLetter(String.fromCharCode(event.which))
             }
         })
+        loadWord()
     }, [])
+
+    async function loadWord(){
+        const db = getFirestore(app)
+
+        const termoCol = collection(db, 'termo')
+        const termoSnapshot = await getDocs(termoCol)
+
+        termoSnapshot.docs.forEach( async document => {
+            const data = document.data()
+
+            if(new Date(data.lastUpdated.seconds*1000).toDateString() === new Date().toDateString()) {
+                setWord(data.todaysWord)
+                return
+            }
+
+            const newWord = words[Math.floor(Math.random() * (Math.floor(words.length) - Math.ceil(1) + 1)) + Math.ceil(1)].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
+            const newBlackList = data.blackList
+            if(newBlackList.includes(newWord)) {
+                loadWord()
+            } else {
+                setWord(newWord)
+                newBlackList.push(newWord)
+                const docRef = doc(db, 'termo', document.id)
+                await updateDoc(docRef, {
+                    blackList: newBlackList,
+                    lastUpdated: new Date(),
+                    todaysWord: newWord
+
+                })
+            }
+        })
+    }
 
     function setLetter(value) {
         const newLetterArray = stateRef.current.letters
@@ -101,7 +136,6 @@ function Board() {
         }
         setActiveLine(stateRef.current.activeLine + 1)
         setSelectedSquare(0)
-        console.log(newGreyLettersArr)
         setGreenLetters([...newGreenLettersArr])
         setYellowLetters([...newYelloLettersArr])
         setGreyLetters([...newGreyLettersArr])

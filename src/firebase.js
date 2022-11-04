@@ -1,6 +1,6 @@
-import firebase from 'firebase'
+import { initializeApp } from 'firebase/app';
 
-const config = {
+const firebaseConfig = {
     apiKey: "AIzaSyDjTmOX4yo3Ww3Y5wtog9bOZXdpgxezZzA",
     authDomain: "emprestaai-6534a.firebaseapp.com",
     databaseURL: "https://emprestaai-6534a.firebaseio.com",
@@ -11,6 +11,6 @@ const config = {
     measurementId: "G-7CHJWT1BCF"
 };
 
-firebase.initializeApp(config)
+const app = initializeApp(firebaseConfig);
 
-export default firebase
+export default app
