@@ -26,7 +26,7 @@ function Line({ isActive, selectedSquare, letters, done, word, handleSquareClick
           lBefore++;
         }
       }
-      console.log(letters, totalYellows, index, lBefore)
+      
       return totalYellows > lBefore;
     }
     return (

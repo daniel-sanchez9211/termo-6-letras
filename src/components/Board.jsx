@@ -17,9 +17,9 @@ function Board() {
     ['', '', '', '', '', ''],
     ['', '', '', '', '', '']]
     )
-    const [greyLetters, setGreyLetters] = useState(["}"]) 
-    const [yellowLetters, setYellowLetters] = useState(["}"]) 
-    const [greenLetters, setGreenLetters] = useState(["}"]) 
+    const [greyLetters, setGreyLetters] = useState(["}"])
+    const [yellowLetters, setYellowLetters] = useState(["}"])
+    const [greenLetters, setGreenLetters] = useState(["}"])
     const stateRef = useRef();
     stateRef.current = {
         selectedSquare,
@@ -45,25 +45,56 @@ function Board() {
             }
         })
         loadWord()
+        loadProgress()
     }, [])
 
-    async function loadWord(){
+    async function loadProgress() {
+        const date = localStorage.getItem('date')
+
+        if (date === new Date().toDateString()) {
+            const progress = JSON.parse(localStorage.getItem('progress'))
+            if (progress) {
+                setWord(progress.word)
+                setLetters(progress.letters)
+                setActiveLine(progress.activeLine)
+                setGreenLetters(progress.greenLetters)
+                setGreyLetters(progress.greyLetters)
+                setYellowLetters(progress.yellowLetters)
+
+                const correct = progress.word === progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase()
+
+                if (correct) {
+                    setTimeout(() => {
+                        alert('Acertou! A palavra é ' + progress.word)
+                    }, 100);                   
+                }
+        
+                if (progress.word !== progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase() && progress.activeLine + 1 > 5 && !correct) {
+                    setTimeout(() => {
+                        alert('Errooooou! A palavra é ' + progress.word)
+                    }, 100);
+                }
+            }
+        }
+    }
+
+    async function loadWord() {
         const db = getFirestore(app)
 
         const termoCol = collection(db, 'termo')
         const termoSnapshot = await getDocs(termoCol)
 
-        termoSnapshot.docs.forEach( async document => {
+        termoSnapshot.docs.forEach(async document => {
             const data = document.data()
 
-            if(new Date(data.lastUpdated.seconds*1000).toDateString() === new Date().toDateString()) {
+            if (new Date(data.lastUpdated.seconds * 1000).toDateString() === new Date().toDateString()) {
                 setWord(data.todaysWord)
                 return
             }
 
             const newWord = words[Math.floor(Math.random() * (Math.floor(words.length) - Math.ceil(1) + 1)) + Math.ceil(1)].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
             const newBlackList = data.blackList
-            if(newBlackList.includes(newWord)) {
+            if (newBlackList.includes(newWord)) {
                 loadWord()
             } else {
                 setWord(newWord)
@@ -73,7 +104,6 @@ function Board() {
                     blackList: newBlackList,
                     lastUpdated: new Date(),
                     todaysWord: newWord
-
                 })
             }
         })
@@ -102,43 +132,58 @@ function Board() {
     function playWord() {
         let allFilled = true
 
-        letters[stateRef.current.activeLine].forEach(l => {
+        stateRef.current.letters[stateRef.current.activeLine].forEach(l => {
             if (!l) allFilled = false
         })
-
+        
         if (!allFilled) return
-        if (allWordsArr.indexOf(letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) === -1) return
+        if (allWordsArr.indexOf(stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) === -1) return
 
         const newGreenLettersArr = [...stateRef.current.greenLetters]
         const newYelloLettersArr = [...stateRef.current.yellowLetters]
         const newGreyLettersArr = [...stateRef.current.greyLetters]
 
-        letters[stateRef.current.activeLine].forEach((l,i) => {
-            if(l.toLowerCase() === stateRef.current.word.charAt(i)) {
+        stateRef.current.letters[stateRef.current.activeLine].forEach((l, i) => {
+            if (l.toLowerCase() === stateRef.current.word.charAt(i)) {
                 newGreenLettersArr.push(l.toLowerCase())
-            } else if (l && l.toLowerCase() !== stateRef.current.word.charAt(i) && stateRef.current.word.includes(l.toLowerCase()) ) {
+            } else if (l && l.toLowerCase() !== stateRef.current.word.charAt(i) && stateRef.current.word.includes(l.toLowerCase())) {
                 newYelloLettersArr.push(l.toLowerCase())
             } else if (l && !stateRef.current.word.includes(l.toLowerCase())) {
                 newGreyLettersArr.push(l.toLowerCase())
-            }            
+            }
         })
 
-        if (stateRef.current.word === letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
+        let isGameOver = false;
+
+        if (stateRef.current.word === stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
             setTimeout(() => {
-                alert('Acertou! A palavra é ' + word)
+                alert('Acertou! A palavra é ' + stateRef.current.word)
             }, 100);
-            return setActiveLine(6) //gambiarra para tirar a interacao da tela (encerrar o jogo)
+            
+            isGameOver = true
         }
-        if (stateRef.current.word !== letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase() && stateRef.current.activeLine + 1 > 5) {
+
+        if (stateRef.current.word !== stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase() && stateRef.current.activeLine + 1 > 5) {
             setTimeout(() => {
-                alert('Errooooou! A palavra é ' + word)
+                alert('Errooooou! A palavra é ' + stateRef.current.word)
             }, 100);
         }
-        setActiveLine(stateRef.current.activeLine + 1)
+        setActiveLine(isGameOver ? 6 : stateRef.current.activeLine + 1)
         setSelectedSquare(0)
         setGreenLetters([...newGreenLettersArr])
-        setYellowLetters([...newYelloLettersArr])
         setGreyLetters([...newGreyLettersArr])
+        setYellowLetters([...newYelloLettersArr])
+
+        localStorage.setItem('progress', JSON.stringify({
+            word: stateRef.current.word,
+            letters: stateRef.current.letters,
+            activeLine: stateRef.current.activeLine + 1,
+            greenLetters: [...newGreenLettersArr],
+            greyLetters: [...newGreyLettersArr],
+            yellowLetters: [...newYelloLettersArr]
+        }))
+
+        localStorage.setItem('date', new Date().toDateString())
     }
 
     function nextSquare() {
@@ -161,10 +206,10 @@ function Board() {
             <h1>Termo 6 letras!</h1>
 
             {letters.map((l, i) => {
-                return <Line key={i} isActive={activeLine === i} selectedSquare={selectedSquare} letters={letters[i]} activeLine={activeLine} word={word} done={activeLine > i} handleSquareClick={handleSquareClick}/>
+                return <Line key={i} isActive={activeLine === i} selectedSquare={selectedSquare} letters={letters[i]} activeLine={activeLine} word={word} done={activeLine > i} handleSquareClick={handleSquareClick} />
             })}
 
-            <SimpleKeyboard setLetter={setLetter} playWord={playWord} eraseLetter={eraseLetter} greyLetters={greyLetters} greenLetters={greenLetters} yellowLetters={yellowLetters}/>
+            <SimpleKeyboard setLetter={setLetter} playWord={playWord} eraseLetter={eraseLetter} greyLetters={greyLetters} greenLetters={greenLetters} yellowLetters={yellowLetters} />
         </div>
     );
 }
