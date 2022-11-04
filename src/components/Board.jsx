@@ -66,7 +66,8 @@ function Board() {
                 if (correct) {
                     setTimeout(() => {
                         alert('Acertou! A palavra é ' + progress.word)
-                    }, 100);                   
+                    }, 100);         
+                    setActiveLine(6)          
                 }
         
                 if (progress.word !== progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase() && progress.activeLine + 1 > 5 && !correct) {
