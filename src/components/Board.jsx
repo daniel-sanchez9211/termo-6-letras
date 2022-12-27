@@ -65,6 +65,7 @@ function Board() {
                 const correct = progress.word === progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase()
 
                 if (correct) {
+                    setLoading(false)
                     setTimeout(() => {
                         alert('Acertou! A palavra é ' + progress.word)
                     }, 100);         
@@ -72,6 +73,7 @@ function Board() {
                 }
         
                 if (progress.word !== progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase() && progress.activeLine + 1 > 5 && !correct) {
+                    setLoading(false)
                     setTimeout(() => {
                         alert('Errooooou! A palavra é ' + progress.word)
                     }, 100);
@@ -160,6 +162,7 @@ function Board() {
         let isGameOver = false;
 
         if (stateRef.current.word === stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
+            setLoading(false)
             setTimeout(() => {
                 alert('Acertou! A palavra é ' + stateRef.current.word)
             }, 100);
@@ -168,6 +171,7 @@ function Board() {
         }
 
         if (stateRef.current.word !== stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase() && stateRef.current.activeLine + 1 > 5) {
+            setLoading(false)
             setTimeout(() => {
                 alert('Errooooou! A palavra é ' + stateRef.current.word)
             }, 100);
