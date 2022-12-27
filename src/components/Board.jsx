@@ -7,6 +7,7 @@ import app from '../firebase'
 import { getFirestore, collection, getDocs, updateDoc, doc } from 'firebase/firestore/lite';
 
 function Board() {
+    const [loading, setLoading] = useState(true)
     const [activeLine, setActiveLine] = useState(0)
     const [selectedSquare, setSelectedSquare] = useState(0)
     const [word, setWord] = useState('')
@@ -90,6 +91,7 @@ function Board() {
 
             if (new Date(data.lastUpdated.seconds * 1000).toDateString() === new Date().toDateString()) {
                 setWord(data.todaysWord)
+                setLoading(false)
                 return
             }
 
@@ -106,6 +108,7 @@ function Board() {
                     lastUpdated: new Date(),
                     todaysWord: newWord
                 })
+                setLoading(false)
             }
         })
     }
@@ -199,6 +202,14 @@ function Board() {
 
     function handleSquareClick(position) {
         setSelectedSquare(position)
+    }
+
+    if(loading) {
+        return (
+            <div className="Board">
+                <span className="loading">Carregando...</span>
+            </div>
+        )
     }
 
 
