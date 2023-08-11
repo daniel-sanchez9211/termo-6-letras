@@ -41,10 +41,9 @@ function SimpleKeyboard({setLetter, playWord, eraseLetter, greenLetters, yellowL
         onKeyPress={onKeyPress}
         layout={{
           'default': [
-            '          {bksp}',
             'q w e r t y u i o p',
-            'a s d f g h j k l {enter}',
-            'z x c v b n m    '
+            'a s d f g h j k l {bksp}',
+            'z x c v b n m {enter}'
           ],
           'shift': [
             '~ ! @ # $ % ^ &amp; * ( ) _ + {bksp}',
