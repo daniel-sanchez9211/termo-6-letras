@@ -39,6 +39,7 @@ function SimpleKeyboard({setLetter, playWord, eraseLetter, greenLetters, yellowL
         layoutName={layout}
         onChange={onChange}
         onKeyPress={onKeyPress}
+        display={{ '{bksp}': 'bksp', '{enter}': 'enter' }}
         layout={{
           'default': [
             'q w e r t y u i o p',
