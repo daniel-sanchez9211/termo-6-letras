@@ -64,3 +64,8 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+.Keyboard {
+  width: 95vw;
+  max-width: 350px;
+}
