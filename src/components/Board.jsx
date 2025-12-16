@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from "react"
 
 function Board() {
     const [loading, setLoading] = useState(true)
+    const [isWakingUp, setIsWakingUp] = useState(false)
     const [activeLine, setActiveLine] = useState(0)
     const [selectedSquare, setSelectedSquare] = useState(0)
     const [word, setWord] = useState('')
@@ -81,23 +82,29 @@ function Board() {
     }
 
     async function loadWord() {
-        try {
-            const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
-            const response = await fetch(`${API_URL}/word`);
-            const data = await response.json();
+        const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+        let success = false;
 
-            if (data.word) {
-                setWord(data.word);
-                setLoading(false);
-            } else {
-                throw new Error("Palavra não encontrada na resposta");
+        while (!success) {
+            try {
+                const response = await fetch(`${API_URL}/word`);
+                const data = await response.json();
+
+                if (data.word) {
+                    setWord(data.word);
+                    setLoading(false);
+                    success = true;
+                    setIsWakingUp(false);
+                } else {
+                    throw new Error("Palavra não encontrada na resposta");
+                }
+            } catch (err) {
+                console.error("Falha ao buscar palavra. Tentando novamente em 3s...", err);
+                setIsWakingUp(true);
+                // Fallback: usar palavra local aleatória se o servidor cair ou não responder
+                // Espera 3 segundos antes de tentar de novo
+                await new Promise(resolve => setTimeout(resolve, 3000));
             }
-        } catch (err) {
-            console.error("Falha ao buscar palavra do servidor:", err);
-            // Fallback: usar palavra local aleatória se o servidor cair ou não responder
-            const randomWord = words[Math.floor(Math.random() * words.length)].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
-            setWord(randomWord);
-            setLoading(false);
         }
     }
 
@@ -197,7 +204,9 @@ function Board() {
     if (loading) {
         return (
             <div className="Board">
-                <span className="loading">Carregando...</span>
+                <span className="loading">
+                    {isWakingUp ? "Acordando servidor... (pode levar 1 min)" : "Carregando..."}
+                </span>
             </div>
         )
     }
