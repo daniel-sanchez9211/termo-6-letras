@@ -3,8 +3,6 @@ import SimpleKeyboard from "./SimpleKeyboard"
 import { words } from '../utils/words'
 import { allWordsArr } from '../utils/allWordsArr'
 import { useEffect, useState, useRef } from "react"
-import app from '../firebase'
-import { getFirestore, collection, getDocs, updateDoc, doc } from 'firebase/firestore/lite';
 
 function Board() {
     const [loading, setLoading] = useState(true)
@@ -68,10 +66,10 @@ function Board() {
                     setLoading(false)
                     setTimeout(() => {
                         alert('Acertou! A palavra é ' + progress.word)
-                    }, 100);         
-                    setActiveLine(6)          
+                    }, 100);
+                    setActiveLine(6)
                 }
-        
+
                 if (progress.word !== progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase() && progress.activeLine + 1 > 5 && !correct) {
                     setLoading(false)
                     setTimeout(() => {
@@ -83,36 +81,24 @@ function Board() {
     }
 
     async function loadWord() {
-        const db = getFirestore(app)
+        try {
+            const API_URL = process.env.REACT_APP_API_URL || 'http://localhost:5001';
+            const response = await fetch(`${API_URL}/word`);
+            const data = await response.json();
 
-        const termoCol = collection(db, 'termo')
-        const termoSnapshot = await getDocs(termoCol)
-
-        termoSnapshot.docs.forEach(async document => {
-            const data = document.data()
-
-            if (new Date(data.lastUpdated.seconds * 1000).toDateString() === new Date().toDateString()) {
-                setWord(data.todaysWord)
-                setLoading(false)
-                return
-            }
-
-            const newWord = words[Math.floor(Math.random() * (Math.floor(words.length) - Math.ceil(1) + 1)) + Math.ceil(1)].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "")
-            const newBlackList = data.blackList
-            if (newBlackList.includes(newWord)) {
-                loadWord()
+            if (data.word) {
+                setWord(data.word);
+                setLoading(false);
             } else {
-                setWord(newWord)
-                newBlackList.push(newWord)
-                const docRef = doc(db, 'termo', document.id)
-                await updateDoc(docRef, {
-                    blackList: newBlackList,
-                    lastUpdated: new Date(),
-                    todaysWord: newWord
-                })
-                setLoading(false)
+                throw new Error("Palavra não encontrada na resposta");
             }
-        })
+        } catch (err) {
+            console.error("Falha ao buscar palavra do servidor:", err);
+            // Fallback: usar palavra local aleatória se o servidor cair ou não responder
+            const randomWord = words[Math.floor(Math.random() * words.length)].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            setWord(randomWord);
+            setLoading(false);
+        }
     }
 
     function setLetter(value) {
@@ -141,7 +127,7 @@ function Board() {
         stateRef.current.letters[stateRef.current.activeLine].forEach(l => {
             if (!l) allFilled = false
         })
-        
+
         if (!allFilled) return
         if (allWordsArr.indexOf(stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) === -1) return
 
@@ -166,7 +152,7 @@ function Board() {
             setTimeout(() => {
                 alert('Acertou! A palavra é ' + stateRef.current.word)
             }, 100);
-            
+
             isGameOver = true
         }
 
@@ -208,7 +194,7 @@ function Board() {
         setSelectedSquare(position)
     }
 
-    if(loading) {
+    if (loading) {
         return (
             <div className="Board">
                 <span className="loading">Carregando...</span>
