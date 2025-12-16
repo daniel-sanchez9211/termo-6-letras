@@ -1,8 +1,8 @@
 import Line from "./Line";
 import SimpleKeyboard from "./SimpleKeyboard"
-import { words } from '../utils/words'
 import { allWordsArr } from '../utils/allWordsArr'
 import { useEffect, useState, useRef } from "react"
+import { toast } from 'react-toastify';
 
 function Board() {
     const [loading, setLoading] = useState(true)
@@ -65,17 +65,13 @@ function Board() {
 
                 if (correct) {
                     setLoading(false)
-                    setTimeout(() => {
-                        alert('Acertou! A palavra é ' + progress.word)
-                    }, 100);
+                    toast.success('Acertou! A palavra é ' + progress.word)
                     setActiveLine(6)
                 }
 
                 if (progress.word !== progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase() && progress.activeLine + 1 > 5 && !correct) {
                     setLoading(false)
-                    setTimeout(() => {
-                        alert('Errooooou! A palavra é ' + progress.word)
-                    }, 100);
+                    toast.error('Errooooou! A palavra é ' + progress.word)
                 }
             }
         }
@@ -156,18 +152,14 @@ function Board() {
 
         if (stateRef.current.word === stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
             setLoading(false)
-            setTimeout(() => {
-                alert('Acertou! A palavra é ' + stateRef.current.word)
-            }, 100);
+            toast.success('Acertou! A palavra é ' + stateRef.current.word)
 
             isGameOver = true
         }
 
         if (stateRef.current.word !== stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase() && stateRef.current.activeLine + 1 > 5) {
             setLoading(false)
-            setTimeout(() => {
-                alert('Errooooou! A palavra é ' + stateRef.current.word)
-            }, 100);
+            toast.error('Errooooou! A palavra é ' + stateRef.current.word)
         }
         setActiveLine(isGameOver ? 6 : stateRef.current.activeLine + 1)
         setSelectedSquare(0)
