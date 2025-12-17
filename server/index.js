@@ -60,7 +60,11 @@ app.get('/word', async (req, res) => {
         const now = new Date();
         const lastUpdate = new Date(document.lastUpdated);
 
-        if (now.toDateString() === lastUpdate.toDateString()) {
+        const options = { timeZone: 'America/Sao_Paulo', year: 'numeric', month: 'numeric', day: 'numeric' };
+        const nowString = now.toLocaleDateString('pt-BR', options);
+        const lastUpdateString = lastUpdate.toLocaleDateString('pt-BR', options);
+
+        if (nowString === lastUpdateString) {
             console.log('Palavra do dia já definida:', document.todaysWord);
             return res.json({ word: document.todaysWord });
         }
