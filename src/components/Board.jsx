@@ -10,6 +10,7 @@ function Board() {
     const [activeLine, setActiveLine] = useState(0)
     const [selectedSquare, setSelectedSquare] = useState(0)
     const [word, setWord] = useState('')
+    const [displayWord, setDisplayWord] = useState('')
     const [letters, setLetters] = useState([['', '', '', '', '', ''],
     ['', '', '', '', '', ''],
     ['', '', '', '', '', ''],
@@ -26,6 +27,7 @@ function Board() {
         letters,
         activeLine,
         word,
+        displayWord,
         greenLetters,
         greyLetters,
         yellowLetters,
@@ -55,6 +57,7 @@ function Board() {
             const progress = JSON.parse(localStorage.getItem('progress'))
             if (progress) {
                 setWord(progress.word)
+                setDisplayWord(progress.displayWord || progress.word)
                 setLetters(progress.letters)
                 setActiveLine(progress.activeLine)
                 setGreenLetters(progress.greenLetters)
@@ -65,13 +68,13 @@ function Board() {
 
                 if (correct) {
                     setLoading(false)
-                    toast.success('Acertou! A palavra é ' + progress.word)
+                    toast.success('Acertou! A palavra é ' + (progress.displayWord || progress.word).toUpperCase())
                     setActiveLine(6)
                 }
 
                 if (progress.word !== progress.letters[progress.activeLine - 1].toString().replaceAll(',', '').toLowerCase() && progress.activeLine + 1 > 5 && !correct) {
                     setLoading(false)
-                    toast.error('Errooooou! A palavra é ' + progress.word)
+                    toast.error('Errooooou! A palavra é ' + (progress.displayWord || progress.word).toUpperCase())
                 }
             }
         }
@@ -88,6 +91,7 @@ function Board() {
 
                 if (data.word) {
                     setWord(data.word);
+                    setDisplayWord(data.displayWord || data.word);
                     setLoading(false);
                     success = true;
                     setIsWakingUp(false);
@@ -152,14 +156,14 @@ function Board() {
 
         if (stateRef.current.word === stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase()) {
             setLoading(false)
-            toast.success('Acertou! A palavra é ' + stateRef.current.word)
+            toast.success('Acertou! A palavra é ' + stateRef.current.displayWord.toUpperCase())
 
             isGameOver = true
         }
 
         if (stateRef.current.word !== stateRef.current.letters[stateRef.current.activeLine].toString().replaceAll(',', '').toLowerCase() && stateRef.current.activeLine + 1 > 5) {
             setLoading(false)
-            toast.error('Errooooou! A palavra é ' + stateRef.current.word)
+            toast.error('Errooooou! A palavra é ' + stateRef.current.displayWord.toUpperCase())
         }
         setActiveLine(isGameOver ? 6 : stateRef.current.activeLine + 1)
         setSelectedSquare(0)
@@ -169,6 +173,7 @@ function Board() {
 
         localStorage.setItem('progress', JSON.stringify({
             word: stateRef.current.word,
+            displayWord: stateRef.current.displayWord,
             letters: stateRef.current.letters,
             activeLine: stateRef.current.activeLine + 1,
             greenLetters: [...newGreenLettersArr],

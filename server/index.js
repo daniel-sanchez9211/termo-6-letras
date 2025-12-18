@@ -48,10 +48,12 @@ app.get('/word', async (req, res) => {
 
         if (!document) {
             console.log('Criando documento inicial...');
-            const initialWord = words[Math.floor(Math.random() * words.length)].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            const initialCandidate = words[Math.floor(Math.random() * words.length)];
+            const initialNorm = initialCandidate.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            
             document = new Termo({
-                todaysWord: initialWord,
-                blackList: [initialWord],
+                todaysWord: initialCandidate,
+                blackList: [initialNorm],
                 lastUpdated: new Date()
             });
             await document.save();
@@ -66,29 +68,31 @@ app.get('/word', async (req, res) => {
 
         if (nowString === lastUpdateString) {
             console.log('Palavra do dia já definida:', document.todaysWord);
-            return res.json({ word: document.todaysWord });
+            const normWord = document.todaysWord.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
+            return res.json({ word: normWord, displayWord: document.todaysWord });
         }
 
         console.log('Sorteando nova palavra...');
         // Sorteia nova palavra
-        let newWord = '';
+        let newWord = ''; // Normalized version for blacklist check
+        let candidate = ''; // Original accented version
         let attempts = 0;
         const maxAttempts = 100;
 
         do {
-            const candidate = words[Math.floor(Math.random() * words.length)];
+            candidate = words[Math.floor(Math.random() * words.length)];
             newWord = candidate.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, "");
             attempts++;
         } while (document.blackList.includes(newWord) && attempts < maxAttempts);
 
-        document.todaysWord = newWord;
+        document.todaysWord = candidate;
         document.blackList.push(newWord);
         document.lastUpdated = now;
         
         await document.save();
-        console.log('Nova palavra salva:', newWord);
+        console.log('Nova palavra salva:', candidate);
         
-        res.json({ word: newWord });
+        res.json({ word: newWord, displayWord: candidate });
 
     } catch (error) {
         console.error('Erro interno no servidor:', error);
